@@ -6,7 +6,7 @@
 	"type": "commonjs",
 	"scripts": {
 		"start": "node start.js",
-		"prettier": "npx prettier . --write"
+		"prettier": "npx --yes prettier . --write"
 	},
 	"prettier": {
 		"singleQuote": false,
