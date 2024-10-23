@@ -1,3 +1,4 @@
+npm run prettier
 source ${cat .env | grep GIT | sed 's/GIT/export GIT/g'}
 git config --global --add safe.directory ${PWD}
 git config --global user.email ${GIT_EMAIL}
