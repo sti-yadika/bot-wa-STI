@@ -4,6 +4,7 @@ RUN apk update && apk upgrade
 
 RUN apk add git
 RUN apk add openssh
+RUN apk add python3
 
 COPY ssh_key/* /root/.ssh
 
