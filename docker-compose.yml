@@ -1,0 +1,9 @@
+version: "3"
+services:
+  bot-sti:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "./:/apps"
+    restart: always
