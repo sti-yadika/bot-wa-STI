@@ -1,3 +1,7 @@
+# RULE CONTRIBUTE
+
+DONT PUSH TO BRANCH `prod`
+
 ## Information
 
 <div align="center">
