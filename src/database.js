@@ -1,9 +1,9 @@
-require('../settings');
-const fs = require('fs');
-const path = require('path');
-const chalk = require('chalk');
-const mongoose = require('mongoose');
-let DataBase;
+require("../settings")
+const fs = require("fs")
+const path = require("path")
+const chalk = require("chalk")
+const mongoose = require("mongoose")
+let DataBase
 
 if (/mongo/.test(global.tempatDB)) {
 	DataBase = class mongoDB {
@@ -13,7 +13,7 @@ if (/mongo/.test(global.tempatDB)) {
 			this._model = {}
 			this.options = options
 		}
-		
+
 		read = async () => {
 			mongoose.connect(this.url, { ...this.options })
 			this.connection = mongoose.connection
@@ -23,11 +23,11 @@ if (/mongo/.test(global.tempatDB)) {
 						type: Object,
 						required: true,
 						default: {},
-					}
+					},
 				})
-				this._model = mongoose.model('data', schema)
+				this._model = mongoose.model("data", schema)
 			} catch {
-				this._model = mongoose.model('data')
+				this._model = mongoose.model("data")
 			}
 			this.data = await this._model.findOne({})
 			if (!this.data) {
@@ -35,9 +35,9 @@ if (/mongo/.test(global.tempatDB)) {
 				this.data = await this._model.findOne({})
 			} else return this?.data?.data || this?.data
 		}
-		
+
 		write = async (data) => {
-			if (this.data && !this.data.data) return (new this._model({ data })).save()
+			if (this.data && !this.data.data) return new this._model({ data }).save()
 			this._model.findById(this.data._id, (err, docs) => {
 				if (!err) {
 					if (!docs.data) docs.data = {}
@@ -50,10 +50,10 @@ if (/mongo/.test(global.tempatDB)) {
 } else if (/json/.test(global.tempatDB)) {
 	DataBase = class dataBase {
 		data = {}
-		file = path.join(process.cwd(), 'database', global.tempatDB);
-		
+		file = path.join(process.cwd(), "database", global.tempatDB)
+
 		read = async () => {
-			let data;
+			let data
 			if (fs.existsSync(this.file)) {
 				data = JSON.parse(fs.readFileSync(this.file))
 			} else {
@@ -62,7 +62,7 @@ if (/mongo/.test(global.tempatDB)) {
 			}
 			return data
 		}
-		
+
 		write = async (data) => {
 			this.data = !!data ? data : global.db
 			let dirname = path.dirname(this.file)
@@ -75,11 +75,10 @@ if (/mongo/.test(global.tempatDB)) {
 
 module.exports = DataBase
 
-
 let file = require.resolve(__filename)
 fs.watchFile(file, () => {
 	fs.unwatchFile(file)
 	console.log(chalk.redBright(`Update ${__filename}`))
 	delete require.cache[file]
 	require(file)
-});
+})

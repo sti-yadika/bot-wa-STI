@@ -1,5 +1,5 @@
-const fs = require('fs');
-const toMs = require('ms');
+const fs = require("fs")
+const toMs = require("ms")
 
 /**
  * Add premium user.
@@ -8,15 +8,15 @@ const toMs = require('ms');
  * @param {Object} _dir
  */
 const addPremiumUser = (userId, expired, _dir) => {
-	const cekUser = _dir.find((user) => user.id == userId);
+	const cekUser = _dir.find((user) => user.id == userId)
 	if (cekUser) {
-		cekUser.expired = cekUser.expired + toMs(expired);
+		cekUser.expired = cekUser.expired + toMs(expired)
 	} else {
-		const obj = { id: userId, expired: Date.now() + toMs(expired) };
-		_dir.push(obj);
+		const obj = { id: userId, expired: Date.now() + toMs(expired) }
+		_dir.push(obj)
 	}
-	fs.writeFileSync('./database/premium.json', JSON.stringify(_dir));
-};
+	fs.writeFileSync("./database/premium.json", JSON.stringify(_dir))
+}
 
 /**
  * Get premium user position.
@@ -25,16 +25,16 @@ const addPremiumUser = (userId, expired, _dir) => {
  * @returns {Number}
  */
 const getPremiumPosition = (userId, _dir) => {
-	let position = null;
+	let position = null
 	Object.keys(_dir).forEach((i) => {
 		if (_dir[i].id === userId) {
-			position = i;
+			position = i
 		}
-	});
+	})
 	if (position !== null) {
-		return position;
+		return position
 	}
-};
+}
 
 /**
  * Get premium user expire.
@@ -43,16 +43,16 @@ const getPremiumPosition = (userId, _dir) => {
  * @returns {Number}
  */
 const getPremiumExpired = (userId, _dir) => {
-	let position = null;
+	let position = null
 	Object.keys(_dir).forEach((i) => {
 		if (_dir[i].id === userId) {
-			position = i;
+			position = i
 		}
-	});
+	})
 	if (position !== null) {
-		return _dir[position].expired;
+		return _dir[position].expired
 	}
-};
+}
 
 /**
  * Check user is premium.
@@ -61,14 +61,14 @@ const getPremiumExpired = (userId, _dir) => {
  * @returns {Boolean}
  */
 const checkPremiumUser = (userId, _dir) => {
-	let status = false;
+	let status = false
 	Object.keys(_dir).forEach((i) => {
 		if (_dir[i].id === userId) {
-			status = true;
+			status = true
 		}
-	});
-	return status;
-};
+	})
+	return status
+}
 
 /**
  * Constantly checking premium.
@@ -76,22 +76,22 @@ const checkPremiumUser = (userId, _dir) => {
  */
 const expiredCheck = (conn, _dir) => {
 	setInterval(() => {
-		let position = null;
+		let position = null
 		Object.keys(_dir).forEach((i) => {
 			if (Date.now() >= _dir[i].expired) {
-				position = i;
+				position = i
 			}
-		});
+		})
 		if (position !== null) {
-			idny = _dir[position].id;
-			console.log(`Premium expired: ${_dir[position].id}`);
-			_dir.splice(position, 1);
-			fs.writeFileSync('./database/premium.json', JSON.stringify(_dir));
-			idny ? conn.sendMessage(idny, { text: 'Premium Expired, Terima Kasih Sudah Berlangganan' }) : '';
-			idny = false;
+			idny = _dir[position].id
+			console.log(`Premium expired: ${_dir[position].id}`)
+			_dir.splice(position, 1)
+			fs.writeFileSync("./database/premium.json", JSON.stringify(_dir))
+			idny ? conn.sendMessage(idny, { text: "Premium Expired, Terima Kasih Sudah Berlangganan" }) : ""
+			idny = false
 		}
-	}, 1000);
-};
+	}, 1000)
+}
 
 /**
  * Get all premium user ID.
@@ -99,12 +99,12 @@ const expiredCheck = (conn, _dir) => {
  * @returns {String[]}
  */
 const getAllPremiumUser = (_dir) => {
-	const array = [];
+	const array = []
 	Object.keys(_dir).forEach((i) => {
-		array.push(_dir[i].id);
-	});
-	return array;
-};
+		array.push(_dir[i].id)
+	})
+	return array
+}
 
 module.exports = {
 	addPremiumUser,
@@ -113,4 +113,4 @@ module.exports = {
 	expiredCheck,
 	checkPremiumUser,
 	getAllPremiumUser,
-};
+}
