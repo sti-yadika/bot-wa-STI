@@ -238,3 +238,32 @@ fs.watchFile(file, () => {
 	delete require.cache[file]
 	require(file)
 })
+
+let watch = require("node-watch")
+
+watch(
+	"./",
+	{
+		recursive: true,
+		filter(f, skip) {
+			// skip node_modules
+			if (/\/node_modules/.test(f)) return skip
+			// skip .git folder
+			if (/\.git/.test(f)) return skip
+			// only watch for js files
+			return /\.js$/.test(f)
+		},
+	},
+	function (evt, name) {
+		console.log("%s changed.", name)
+		let _path = path.dirname(__filename)
+		exec(`cd ${_path} && npm run prettier`, (error, stdout, stderr) => {
+			if (error) {
+				console.error(`exec error: ${error}`)
+				return
+			}
+			console.log(`stdout: ${stdout}`)
+			console.error(`stderr: ${stderr}`)
+		})
+	},
+)

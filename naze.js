@@ -1097,6 +1097,8 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 									m.reply("Terjadi kesalahan saat menulis file: ", err)
 								} else {
 									m.reply("Case berhasil ditambahkan")
+									let _path = path.dirname(__filename)
+									exec(`${_path}/commit.sh`)
 								}
 							})
 						} else {
