@@ -33,38 +33,38 @@ global.api = (name, path = "/", query = {}, apikeyqueryname) =>
 	path +
 	(query || apikeyqueryname
 		? "?" +
-			new URLSearchParams(
-				Object.entries({
-					...query,
-					...(apikeyqueryname
-						? { [apikeyqueryname]: global.APIKeys[name in global.APIs ? global.APIs[name] : name] }
-						: {}),
-				}),
-			)
+		new URLSearchParams(
+			Object.entries({
+				...query,
+				...(apikeyqueryname
+					? { [apikeyqueryname]: global.APIKeys[name in global.APIs ? global.APIs[name] : name] }
+					: {}),
+			}),
+		)
 		: "")
 
 const DataBase = require("./src/database")
 const database = new DataBase()
-;(async () => {
-	const loadData = await database.read()
-	if (loadData && Object.keys(loadData).length === 0) {
-		global.db = {
-			set: {},
-			users: {},
-			game: {},
-			groups: {},
-			database: {},
-			...(loadData || {}),
+	; (async () => {
+		const loadData = await database.read()
+		if (loadData && Object.keys(loadData).length === 0) {
+			global.db = {
+				set: {},
+				users: {},
+				game: {},
+				groups: {},
+				database: {},
+				...(loadData || {}),
+			}
+			await database.write(global.db)
+		} else {
+			global.db = loadData
 		}
-		await database.write(global.db)
-	} else {
-		global.db = loadData
-	}
 
-	setInterval(async () => {
-		if (global.db) await database.write(global.db)
-	}, 30000)
-})()
+		setInterval(async () => {
+			if (global.db) await database.write(global.db)
+		}, 30000)
+	})()
 
 const { GroupUpdate, GroupParticipantsUpdate, MessagesUpsert, Solving } = require("./src/message")
 const { isUrl, generateMessageTag, getBuffer, getSizeMedia, fetchJson, await, sleep } = require("./lib/function")
@@ -126,8 +126,8 @@ async function startNazeBot() {
 				console.log(
 					chalk.bgBlack(
 						chalk.redBright("Start with your Country WhatsApp code") +
-							chalk.whiteBright(",") +
-							chalk.greenBright(" Example : 62xxx"),
+						chalk.whiteBright(",") +
+						chalk.greenBright(" Example : 62xxx"),
 					),
 				)
 				await getPhoneNumber()
@@ -231,13 +231,13 @@ async function startNazeBot() {
 
 startNazeBot()
 
-let file = require.resolve(__filename)
-fs.watchFile(file, () => {
-	fs.unwatchFile(file)
-	console.log(chalk.redBright(`Update ${__filename}`))
-	delete require.cache[file]
-	require(file)
-})
+// let file = require.resolve(__filename)
+// fs.watchFile(file, () => {
+// 	fs.unwatchFile(file)
+// 	console.log(chalk.redBright(`Update ${__filename}`))
+// 	delete require.cache[file]
+// 	require(file)
+// })
 
 let watch = require("node-watch")
 
