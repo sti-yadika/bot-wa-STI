@@ -44,27 +44,27 @@ global.api = (name, path = "/", query = {}, apikeyqueryname) =>
 		: "")
 
 const DataBase = require("./src/database")
-const database = new DataBase()
-	; (async () => {
-		const loadData = await database.read()
-		if (loadData && Object.keys(loadData).length === 0) {
-			global.db = {
-				set: {},
-				users: {},
-				game: {},
-				groups: {},
-				database: {},
-				...(loadData || {}),
-			}
-			await database.write(global.db)
-		} else {
-			global.db = loadData
+const database = new DataBase();
+(async () => {
+	const loadData = await database.read()
+	if (loadData && Object.keys(loadData).length === 0) {
+		global.db = {
+			set: {},
+			users: {},
+			game: {},
+			groups: {},
+			database: {},
+			...(loadData || {}),
 		}
+		await database.write(global.db)
+	} else {
+		global.db = loadData
+	}
 
-		setInterval(async () => {
-			if (global.db) await database.write(global.db)
-		}, 30000)
-	})()
+	setInterval(async () => {
+		if (global.db) await database.write(global.db)
+	}, 30000)
+})()
 
 const { GroupUpdate, GroupParticipantsUpdate, MessagesUpsert, Solving } = require("./src/message")
 const { isUrl, generateMessageTag, getBuffer, getSizeMedia, fetchJson, await, sleep } = require("./lib/function")
