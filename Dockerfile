@@ -6,7 +6,9 @@ RUN apk add git
 RUN apk add openssh
 RUN apk add python3
 
-COPY ssh_key/* /root/.ssh
+RUN mkdir /root/.ssh
+
+COPY ssh_key/* /root/.ssh/
 
 WORKDIR /apps
 COPY package*.json ./
