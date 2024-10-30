@@ -1,4 +1,4 @@
 node_modules
 database
 nazedev
-.env.example
+.env
