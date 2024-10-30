@@ -10,6 +10,8 @@ RUN mkdir /root/.ssh
 
 COPY ssh_key/* /root/.ssh/
 
+RUN chmod 600 /root/.ssh/id_ed25519
+
 WORKDIR /apps
 COPY package*.json ./
 
