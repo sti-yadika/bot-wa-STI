@@ -1007,6 +1007,25 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 					await naze.sendTextMentions(m.chat, teks, m)
 				}
 				break
+				case 'smeme': case 'stickmeme': case 'stikmeme': case 'stickermeme': case 'stikermeme': {
+				try {
+					//if (!isPremium) return m.reply(mess.prem)
+					if (!isLimit) return m.reply(mess.limit)
+					if (!/image|webp/.test(mime)) return m.reply(`Kirim/reply image/sticker\nDengan caption ${prefix + command} atas|bawah`)
+					if (!text) return m.reply(`Kirim/reply image/sticker dengan caption ${prefix + command} atas|bawah`)
+					m.reply(mess.wait)
+					let atas = text.split`|`[0] ? text.split`|`[0] : '-'
+					let bawah = text.split`|`[1] ? text.split`|`[1] : '-'
+					let media = await quoted.download()
+					let mem = await UguuSe(media)
+					let smeme = `https://api.memegen.link/images/custom/${encodeURIComponent(atas)}/${encodeURIComponent(bawah)}.png?background=${mem.url}`
+					await naze.sendAsSticker(m.chat, smeme, m, { packname: packname, author: author })
+					setLimit(m, db)
+				} catch (e) {
+					m.reply('Server Meme Sedang Offline!')
+				}
+			}
+			break
 			case "creategc":
 			case "buatgc":
 				{
