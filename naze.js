@@ -1232,7 +1232,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 					await naze.sendMessage(
 						m.chat,
 						{
-							text: `https://github.com/nazedev/hitori\n⬆️ Itu Sc nya cuy`,
+							text: `https://github.com/sti-yadika/bot-wa-STI\n⬆️ Itu Sc nya cuy`,
 							contextInfo: {
 								forwardingScore: 10,
 								isForwarded: true,
