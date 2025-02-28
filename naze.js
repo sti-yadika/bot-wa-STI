@@ -2702,7 +2702,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 			case "shorturl":
 			case "shortlink":
 				{
-					if (!text || !isUrl(text)) return m.reply(`Example: ${prefix + command} https://github.com/nazedev/hitori`)
+					if (!text || !isUrl(text)) return m.reply(`Example: ${prefix + command} https://github.com/sti-yadika/bot-wa-STI`)
 					try {
 						let anu = await axios.get("https://tinyurl.com/api-create.php?url=" + text)
 						m.reply("Url : " + anu.data)
@@ -2714,7 +2714,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 			case "git":
 			case "gitclone":
 				{
-					if (!args[0]) return m.reply(`Example: ${prefix + command} https://github.com/nazedev/hitori`)
+					if (!args[0]) return m.reply(`Example: ${prefix + command} https://github.com/sti-yadika/bot-wa-STI`)
 					if (!isUrl(args[0]) && !args[0].includes("github.com")) return m.reply("Gunakan Url Github!")
 					let [, user, repo] = args[0].match(/(?:https|git)(?::\/\/|@)github\.com[\/:]([^\/:]+)\/(.+)/i) || []
 					try {
