@@ -7,6 +7,6 @@ services:
     volumes:
       - "./:/apps"
     restart: always
-#    stdin_open: true
+    #    stdin_open: true
     tty: true
 #    command: node index.js

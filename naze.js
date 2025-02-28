@@ -1090,7 +1090,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 							return
 						}
 						const posisi = data.indexOf("
-case 'tugas': {
+case 'dosen': {
 				const { data } = await axios.get('https://api.ipify.org?format=json')
 				try {
 					const res = await axios.get("https://github.com/sti-yadika/list-tugas-kuliah/raw/refs/heads/main/list-contact-dosen.txt")

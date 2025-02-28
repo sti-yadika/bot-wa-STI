@@ -33,19 +33,19 @@ global.api = (name, path = "/", query = {}, apikeyqueryname) =>
 	path +
 	(query || apikeyqueryname
 		? "?" +
-		new URLSearchParams(
-			Object.entries({
-				...query,
-				...(apikeyqueryname
-					? { [apikeyqueryname]: global.APIKeys[name in global.APIs ? global.APIs[name] : name] }
-					: {}),
-			}),
-		)
+			new URLSearchParams(
+				Object.entries({
+					...query,
+					...(apikeyqueryname
+						? { [apikeyqueryname]: global.APIKeys[name in global.APIs ? global.APIs[name] : name] }
+						: {}),
+				}),
+			)
 		: "")
 
 const DataBase = require("./src/database")
-const database = new DataBase();
-(async () => {
+const database = new DataBase()
+;(async () => {
 	const loadData = await database.read()
 	if (loadData && Object.keys(loadData).length === 0) {
 		global.db = {
@@ -126,8 +126,8 @@ async function startNazeBot() {
 				console.log(
 					chalk.bgBlack(
 						chalk.redBright("Start with your Country WhatsApp code") +
-						chalk.whiteBright(",") +
-						chalk.greenBright(" Example : 62xxx"),
+							chalk.whiteBright(",") +
+							chalk.greenBright(" Example : 62xxx"),
 					),
 				)
 				await getPhoneNumber()
