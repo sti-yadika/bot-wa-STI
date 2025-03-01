@@ -1462,6 +1462,33 @@ break
 					}
 				}
 				break
+				case 'stalktiktok':
+if (isBan) return m.reply('*Anda Telah Diban Jadi Nggak Bisa Memakai Fitur Bot Lagi*')
+if (args.length == 0) return reply(`Example: ${prefix + command} bulansutena`)
+axios.get(`https://api.lolhuman.xyz/api/stalktiktok/${args[0]}?apikey=${apikey}`).then(({ data }) => {
+var caption = `Username : ${data.result.username}\n`
+caption += `Nickname : ${data.result.nickname}\n`
+caption += `Followers : ${data.result.followers}\n`
+caption += `Followings : ${data.result.followings}\n`
+caption += `Likes : ${data.result.likes}\n`
+caption += `Video : ${data.result.video}\n`
+caption += `Bio : ${data.result.bio}\n`
+naze.sendMessage(from, { image: { url: data.result.user_picture }, caption })
+})
+break
+case 'igstalk': {
+			if (args.length == 0) return reply(`Example: ${prefix + command} whyzzxy`)
+		
+			let j = await fetchJson(`https://api.lolhuman.xyz/api/stalkig/${args[0]}?apikey=${apikey}`)
+				let caption = `Username : ${j.result.username}\n`
+				caption += `Full Name : ${j.result.fullname}\n`
+				caption += `Posts : ${j.result.posts}\n`
+				caption += `Followers : ${j.result.followers}\n`
+				caption += `Following : ${j.result.following}\n`
+				caption += `Bio : ${j.result.bio}`
+				naze.sendMessage(m.chat, { image: { url: j.result.photo_profile }, caption })
+			}
+			break
 			case "setppgroups":
 			case "setppgrup":
 			case "setppgc":
