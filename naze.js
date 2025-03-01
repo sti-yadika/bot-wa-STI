@@ -2942,215 +2942,176 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 				break
 
 			// Downloader Menu
-			case "ytmp3":
-			case "ytaudio":
-			case "ytplayaudio":
-				{
-					if (!text) return m.reply(`Example: ${prefix + command} url_youtube`)
-					if (!text.includes("youtu")) return m.reply("Url Tidak Mengandung Result Dari Youtube!")
-					m.reply(mess.wait)
+			case 'ytmp3': case 'ytaudio': case 'ytplayaudio': {
+				if (!isLimit) return m.reply(mess.limit)
+				if (!text) return m.reply(`Example: ${prefix + command} url_youtube`)
+				if (!text.includes('youtu')) return m.reply('Url Tidak Mengandung Result Dari Youtube!')
+				m.reply(mess.wait)
+				try {
+					const hasil = await ytMp3(text);
+					await m.reply({
+						audio: { url: hasil.result },
+						mimetype: 'audio/mpeg',
+						contextInfo: {
+							externalAdReply: {
+								title: hasil.title,
+								body: hasil.channel,
+								previewType: 'PHOTO',
+								thumbnailUrl: hasil.thumb,
+								mediaType: 1,
+								renderLargerThumbnail: true,
+								sourceUrl: text
+							}
+						}
+					})
+					setLimit(m, db)
+				} catch (e) {
 					try {
-						const hasil = await ytMp3(text)
-						await naze.sendMessage(
-							m.chat,
-							{
-								audio: { url: hasil.result },
-								mimetype: "audio/mpeg",
-								contextInfo: {
-									externalAdReply: {
-										title: hasil.title,
-										body: hasil.channel,
-										previewType: "PHOTO",
-										thumbnailUrl: hasil.thumb,
-										mediaType: 1,
-										renderLargerThumbnail: true,
-										sourceUrl: text,
-									},
-								},
-							},
-							{ quoted: m },
-						)
+						let hasil = await fetchJson('https://ytdl.axeel.my.id/api/download/audio?url=' + text)
+						await naze.sendFileUrl(m.chat, hasil.downloads.url, hasil.metadata.title, m)
+						setLimit(m, db)
 					} catch (e) {
 						try {
-							const anu = new Ytdl()
-							const hasil = await anu.play(text)
-							const hasil_url =
-								Object.values(hasil.audio).find((v) => v.size === "128kbps")?.url || Object.values(hasil.audio)[0]?.url
-							await naze.sendMessage(m.chat, { audio: { url: hasil_url }, mimetype: "audio/mpeg" }, { quoted: m })
+							let hasil = await fetchJson(api('hitori','/download/youtube', { url: text }, 'apikey'))
+							await naze.sendFileUrl(m.chat, hasil.result.resultUrl.audio[0].download, hasil.result.title, m)
+							setLimit(m, db)
 						} catch (e) {
-							try {
-								const hasil = await allDl(text, { isAudioOnly: true })
-								await naze.sendMessage(m.chat, { audio: { url: hasil.url }, mimetype: "audio/mpeg" }, { quoted: m })
-							} catch (e) {
-								m.reply("Gagal Mendownload Audio!")
-							}
+							m.reply('Gagal Mendownload Audio!')
 						}
 					}
 				}
-				break
-			case "ytmp4":
-			case "ytvideo":
-			case "ytplayvideo":
-				{
-					if (!text) return m.reply(`Example: ${prefix + command} url_youtube`)
-					if (!text.includes("youtu")) return m.reply("Url Tidak Mengandung Result Dari Youtube!")
-					m.reply(mess.wait)
+			}
+			break
+			case 'ytmp4': case 'ytvideo': case 'ytplayvideo': {
+				if (!isLimit) return m.reply(mess.limit)
+				if (!text) return m.reply(`Example: ${prefix + command} url_youtube`)
+				if (!text.includes('youtu')) return m.reply('Url Tidak Mengandung Result Dari Youtube!')
+				m.reply(mess.wait)
+				try {
+					const hasil = await ytMp4(text);
+					await m.reply({ video: hasil.result, caption: `*📍Title:* ${hasil.title}\n*✏Description:* ${hasil.desc ? hasil.desc : ''}\n*🚀Channel:* ${hasil.channel}\n*🗓Upload at:* ${hasil.uploadDate}` })
+					setLimit(m, db)
+				} catch (e) {
 					try {
-						const hasil = await ytMp4(text)
-						await naze.sendMessage(
-							m.chat,
-							{
-								video: { url: hasil.result },
-								caption: `*📍Title:* ${hasil.title}\n*✏Description:* ${hasil.desc ? hasil.desc : ""}\n*🚀Channel:* ${hasil.channel}\n*🗓Upload at:* ${hasil.uploadDate}`,
-							},
-							{ quoted: m },
-						)
+						let hasil = await fetchJson('https://ytdl.axeel.my.id/api/download/video?url=' + text)
+						await naze.sendFileUrl(m.chat, hasil.downloads.url, hasil.metadata.title, m)
+						setLimit(m, db)
 					} catch (e) {
 						try {
-							const anu = new Ytdl()
-							const hasil = await anu.play(text)
-							const hasil_url =
-								Object.values(hasil.video).find((v) => v.size === "auto")?.url || Object.values(hasil.video)[0]?.url
-							await naze.sendMessage(m.chat, { video: { url: hasil_url } }, { quoted: m })
+							await naze.sendFileUrl(m.chat, 'https://simple.nvlgroup.my.id/download/youtube?url=' + text, '', m)
+							setLimit(m, db)
 						} catch (e) {
-							try {
-								const hasil = await allDl(text)
-								await naze.sendMessage(m.chat, { video: { url: hasil.url } }, { quoted: m })
-							} catch (e) {
-								m.reply("Gagal Mendownload Video!")
+							m.reply('Gagal Mendownload Audio!')
+						}
+					}
+				}
+			}
+			break
+			case 'ig': case 'instagram': case 'instadl': case 'igdown': case 'igdl': {
+				if (!isLimit) return m.reply(mess.limit)
+				if (!text) return m.reply(`Example: ${prefix + command} url_instagram`)
+				if (!text.includes('instagram.com')) return m.reply('Url Tidak Mengandung Result Dari Instagram!')
+				m.reply(mess.wait)
+				try {
+					const hasil = await instagramDl(text);
+					if(hasil.length < 0) return m.reply('Postingan Tidak Tersedia atau Privat!')
+					for (let i = 0; i < hasil.length; i++) {
+						await naze.sendFileUrl(m.chat, hasil[i].url, 'Done', m)
+					}
+					setLimit(m, db)
+				} catch (e) {
+					try {
+						let hasil = await fetchJson(api('hitori','/download/instagram', { url: text }, 'apikey'))
+						if(hasil.result.length < 0) return m.reply('Postingan Tidak Tersedia atau Privat!')
+						for (let i = 0; i < hasil.result.length; i++) {
+							await naze.sendFileUrl(m.chat, hasil.result[i].imageUrl, 'Done', m)
+						}
+						setLimit(m, db)
+					} catch (e) {
+						m.reply('Postingan Tidak Tersedia atau Privat!')
+					}
+				}
+			}
+			break
+			case 'igstory': case 'instagramstory': case 'instastory': case 'storyig': {
+				if (!text) return m.reply(`Example: ${prefix + command} usernamenya`)
+				try {
+					const hasil = await instaStory(text);
+					m.reply(mess.wait)
+					for (let i = 0; i < hasil.results.length; i++) {
+						await naze.sendFileUrl(m.chat, hasil.results[i].url, 'Done', m)
+					}
+				} catch (e) {
+					m.reply('Username tidak ditemukan atau Privat!');
+				}
+			}
+			break
+			case 'tiktok': case 'tiktokdown': case 'ttdown': case 'ttdl': case 'tt': case 'ttmp4': case 'ttvideo': case 'tiktokmp4': case 'tiktokvideo': {
+				if (!isLimit) return m.reply(mess.limit)
+				if (!text) return m.reply(`Example: ${prefix + command} url_tiktok`)
+				if (!text.includes('tiktok.com')) return m.reply('Url Tidak Mengandung Result Dari Tiktok!')
+				try {
+					const hasil = await tiktokDl(text);
+					m.reply(mess.wait)
+					if (hasil && hasil.size_nowm) {
+						await naze.sendFileUrl(m.chat, hasil.data[1].url, `*📍Title:* ${hasil.title}\n*⏳Duration:* ${hasil.duration}\n*🎃Author:* ${hasil.author.nickname} (@${hasil.author.fullname})`, m)
+					} else {
+						for (let i = 0; i < hasil.data.length; i++) {
+							await naze.sendFileUrl(m.chat, hasil.data[i].url, `*🚀Image:* ${i+1}`, m)
+						}
+					}
+					setLimit(m, db)
+				} catch (e) {
+					m.reply('Gagal/Url tidak valid!')
+				}
+			}
+			break
+			case 'ttmp3': case 'tiktokmp3': case 'ttaudio': case 'tiktokaudio': {
+				if (!isLimit) return m.reply(mess.limit)
+				if (!text) return m.reply(`Example: ${prefix + command} url_tiktok`)
+				if (!text.includes('tiktok.com')) return m.reply('Url Tidak Mengandung Result Dari Tiktok!')
+				try {
+					const hasil = await tiktokDl(text);
+					m.reply(mess.wait)
+					await m.reply({
+						audio: { url: hasil.music_info.url },
+						mimetype: 'audio/mpeg',
+						contextInfo: {
+							externalAdReply: {
+								title: 'TikTok • ' + hasil.author.nickname,
+								body: hasil.stats.likes + ' suka, ' + hasil.stats.comment + ' komentar. ' + hasil.title,
+								previewType: 'PHOTO',
+								thumbnailUrl: hasil.cover,
+								mediaType: 1,
+								renderLargerThumbnail: true,
+								sourceUrl: text
 							}
 						}
-					}
+					})
+					setLimit(m, db)
+				} catch (e) {
+					m.reply('Gagal/Url tidak valid!')
 				}
-				break
-			case "ig":
-			case "instagram":
-			case "instadl":
-			case "igdown":
-			case "igdl":
-				{
-					if (!text) return m.reply(`Example: ${prefix + command} url_instagram`)
-					if (!text.includes("instagram.com")) return m.reply("Url Tidak Mengandung Result Dari Instagram!")
-					try {
-						const hasil = await instaDownload(text)
-						if (hasil.length < 1) return m.reply("Postingan Tidak Tersedia atau Privat!")
+			}
+			break
+			case 'fb': case 'fbdl': case 'fbdown': case 'facebook': case 'facebookdl': case 'facebookdown': case 'fbdownload': case 'fbmp4': case 'fbvideo': {
+				if (!isLimit) return m.reply(mess.limit)
+				if (!text) return m.reply(`Example: ${prefix + command} url_facebook`)
+				if (!text.includes('facebook.com')) return m.reply('Url Tidak Mengandung Result Dari Facebook!')
+				try {
+					const hasil = await facebookDl(text);
+					if (hasil.results.length < 1) {
+						m.reply('Video Tidak ditemukan!')
+					} else {
 						m.reply(mess.wait)
-						for (let i = 0; i < hasil.length; i++) {
-							await naze.sendFileUrl(m.chat, hasil[i].download, "Done", m)
-						}
-					} catch (e) {
-						m.reply("Postingan Tidak Tersedia atau Privat!")
+						await naze.sendFileUrl(m.chat, hasil.results[0].url, `*🎐Title:* ${hasil.caption}`, m);
 					}
+					setLimit(m, db)
+				} catch (e) {
+					m.reply('Server downloader facebook sedang offline!')
 				}
-				break
-			case "igstory":
-			case "instagramstory":
-			case "instastory":
-			case "storyig":
-				{
-					if (!text) return m.reply(`Example: ${prefix + command} usernamenya`)
-					try {
-						const hasil = await instaStory(text)
-						m.reply(mess.wait)
-						for (let i = 0; i < hasil.results.length; i++) {
-							await naze.sendFileUrl(m.chat, hasil.results[i].url, "Done", m)
-						}
-					} catch (e) {
-						m.reply("Username tidak ditemukan atau Privat!")
-					}
-				}
-				break
-			case "tiktok":
-			case "tiktokdown":
-			case "ttdown":
-			case "ttdl":
-			case "tt":
-			case "ttmp4":
-			case "ttvideo":
-			case "tiktokmp4":
-			case "tiktokvideo":
-				{
-					if (!text) return m.reply(`Example: ${prefix + command} url_tiktok`)
-					if (!text.includes("tiktok.com")) return m.reply("Url Tidak Mengandung Result Dari Tiktok!")
-					try {
-						const hasil = await tiktokDl(text)
-						m.reply(mess.wait)
-						if (hasil && hasil.size_nowm) {
-							await naze.sendFileUrl(
-								m.chat,
-								hasil.data[1].url,
-								`*📍Title:* ${hasil.title}\n*⏳Duration:* ${hasil.duration}\n*🎃Author:* ${hasil.author.nickname} (@${hasil.author.fullname})`,
-								m,
-							)
-						} else {
-							for (let i = 0; i < hasil.data.length; i++) {
-								await naze.sendFileUrl(m.chat, hasil.data[i].url, `*🚀Image:* ${i + 1}`, m)
-							}
-						}
-					} catch (e) {
-						m.reply("Gagal/Url tidak valid!")
-					}
-				}
-				break
-			case "ttmp3":
-			case "tiktokmp3":
-			case "ttaudio":
-			case "tiktokaudio":
-				{
-					if (!text) return m.reply(`Example: ${prefix + command} url_tiktok`)
-					if (!text.includes("tiktok.com")) return m.reply("Url Tidak Mengandung Result Dari Tiktok!")
-					try {
-						const hasil = await tiktokDl(text)
-						m.reply(mess.wait)
-						await naze.sendMessage(
-							m.chat,
-							{
-								audio: { url: hasil.music_info.url },
-								mimetype: "audio/mpeg",
-								contextInfo: {
-									externalAdReply: {
-										title: "TikTok • " + hasil.author.nickname,
-										body: hasil.stats.likes + " suka, " + hasil.stats.comment + " komentar. " + hasil.title,
-										previewType: "PHOTO",
-										thumbnailUrl: hasil.cover,
-										mediaType: 1,
-										renderLargerThumbnail: true,
-										sourceUrl: text,
-									},
-								},
-							},
-							{ quoted: m },
-						)
-					} catch (e) {
-						m.reply("Gagal/Url tidak valid!")
-					}
-				}
-				break
-			case "fb":
-			case "fbdl":
-			case "fbdown":
-			case "facebook":
-			case "facebookdl":
-			case "facebookdown":
-			case "fbdownload":
-			case "fbmp4":
-			case "fbvideo":
-				{
-					if (!text) return m.reply(`Example: ${prefix + command} url_facebook`)
-					if (!text.includes("facebook.com")) return m.reply("Url Tidak Mengandung Result Dari Facebook!")
-					try {
-						const hasil = await facebookDl(text)
-						if (hasil.results.length < 1) {
-							m.reply("Video Tidak ditemukan!")
-						} else {
-							m.reply(mess.wait)
-							await naze.sendFileUrl(m.chat, hasil.results[0].url, `*🎐Title:* ${hasil.caption}`, m)
-						}
-					} catch (e) {
-						m.reply("Server downloader facebook sedang offline!")
-					}
-				}
-				break
+			}
+			break
 			case "mediafire":
 				{
 					if (!text)
