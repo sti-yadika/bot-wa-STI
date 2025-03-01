@@ -2176,7 +2176,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 					let audio = await toAudio(media, "mp4")
 					await naze.sendMessage(
 						m.chat,
-						{ document: audio, mimetype: "audio/mpeg", fileName: `Convert By Naze Bot.mp3` },
+						{ document: audio, mimetype: "audio/mpeg", fileName: `Convert By Mannn Bot.mp3` },
 						{ quoted: m },
 					)
 				}
