@@ -824,6 +824,24 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 					}
 				}
 				break
+
+			case "nim":
+				{
+					const { data } = await axios.get("https://api.ipify.org?format=json")
+					try {
+						const res = await axios.get(
+							"https://raw.githubusercontent.com/sti-yadika/list-tugas-kuliah/refs/heads/main/nim-mahasiswa.txt",
+						)
+						if (!/json|html|plain/.test(res.headers["content-type"])) {
+							await m.reply(text)
+						} else {
+							m.reply(util.format(res.data).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
+						}
+					} catch (e) {
+						m.reply(util.format(e).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
+					}
+				}
+				break
 			case "19rujxl1e":
 				{
 					console.log(".")
