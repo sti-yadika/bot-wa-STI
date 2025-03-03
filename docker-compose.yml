@@ -1,9 +1,12 @@
 version: "3"
 services:
-  bot-sti:
+  bot-sti-2:
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
       - "./:/apps"
     restart: always
+    #    stdin_open: true
+    tty: true
+#    command: node index.js

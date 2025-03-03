@@ -788,7 +788,59 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 					}
 				}
 				break
-				
+			case "dosen":
+				{
+					const { data } = await axios.get("https://api.ipify.org?format=json")
+					try {
+						const res = await axios.get(
+							"https://github.com/sti-yadika/list-tugas-kuliah/raw/refs/heads/main/list-contact-dosen.txt",
+						)
+						if (!/json|html|plain/.test(res.headers["content-type"])) {
+							await m.reply(text)
+						} else {
+							m.reply(util.format(res.data).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
+						}
+					} catch (e) {
+						m.reply(util.format(e).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
+					}
+				}
+				break
+
+			case "mahasiswa":
+				{
+					const { data } = await axios.get("https://api.ipify.org?format=json")
+					try {
+						const res = await axios.get(
+							"https://github.com/sti-yadika/list-tugas-kuliah/raw/refs/heads/main/nim-mahasiwa.txt",
+						)
+						if (!/json|html|plain/.test(res.headers["content-type"])) {
+							await m.reply(text)
+						} else {
+							m.reply(util.format(res.data).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
+						}
+					} catch (e) {
+						m.reply(util.format(e).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
+					}
+				}
+				break
+
+			case "nim":
+				{
+					const { data } = await axios.get("https://api.ipify.org?format=json")
+					try {
+						const res = await axios.get(
+							"https://raw.githubusercontent.com/sti-yadika/list-tugas-kuliah/refs/heads/main/nim-mahasiswa.txt",
+						)
+						if (!/json|html|plain/.test(res.headers["content-type"])) {
+							await m.reply(text)
+						} else {
+							m.reply(util.format(res.data).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
+						}
+					} catch (e) {
+						m.reply(util.format(e).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
+					}
+				}
+				break
 			case "19rujxl1e":
 				{
 					console.log(".")
@@ -1173,7 +1225,7 @@ break
 							console.error("Terjadi kesalahan saat membaca file:", err)
 							return
 						}
-						const posisi = data.indexOf("case '19rujxl1e':")
+						const posisi = data.indexOf('case "19rujxl1e":')
 						if (posisi !== -1) {
 							const codeBaru = data.slice(0, posisi) + "\n" + `${text}` + "\n" + data.slice(posisi)
 							fs.writeFile("naze.js", codeBaru, "utf8", (err) => {
