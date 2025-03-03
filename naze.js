@@ -242,6 +242,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 		const readmore = more.repeat(999)
 
 		const isVip = db.users[m.sender] ? db.users[m.sender].vip : false
+		const isLimit = db.users[m.sender] ? (db.users[m.sender].limit > 0) : false
 		const isPremium = isCreator || prem.checkPremiumUser(m.sender, premium) || false
 		const isNsfw = m.isGroup ? db.groups[m.chat].nsfw : false
 
