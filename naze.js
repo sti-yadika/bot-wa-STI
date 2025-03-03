@@ -1577,6 +1577,70 @@ case 'igstalk': {
 				}
 				break
 				
+				case 'sholat': {
+if (!text) return reply(`• *Example :* ${prefix + command} jakarta pusat`)
+async function jadwalSholat(kota) {
+ try {
+ const { data } = await axios.get(`https://www.dream.co.id/jadwal-sholat/${kota}/`);
+ const $ = cheerio.load(data);
+ const rows = $(".table-index-jadwal tbody tr");
+ const jadwal = [];
+ rows.each((index, row) => {
+ const cols = $(row).find("td");
+ jadwal.push({
+ subuh: $(cols[1]).text().trim(),
+ duha: $(cols[2]).text().trim(),
+ zuhur: $(cols[3]).text().trim(),
+ asar: $(cols[4]).text().trim(),
+ magrib: $(cols[5]).text().trim(),
+ isya: $(cols[6]).text().trim(),
+ });
+ });
+ return jadwal[0];
+ } catch (error) {
+ throw new Error("Gagal mengambil data jadwal sholat");
+ }
+}
+ try {
+ const jadwal = await jadwalSholat(text);
+ const caption = `
+┌「 ${text.toUpperCase()} 」
+├ Subuh: ${jadwal.subuh}
+├ Dhuha: ${jadwal.duha}
+├ Dzuhur: ${jadwal.zuhur}
+├ Ashar: ${jadwal.asar}
+├ Maghrib: ${jadwal.magrib}
+├ Isya: ${jadwal.isya}
+└──────────`.trim();
+ const thumbnailUrl = "https://files.catbox.moe/r3mbjq.jpg";
+ await naze.sendMessage(m.chat, {
+ text: caption,
+ contextInfo: {
+ forwardingScore: 2025,
+ isForwarded: true,
+ forwardedNewsletterMessageInfo: {
+ newsletterJid: '120363314209665405@newsletter',
+ serverMessageId: null,
+ newsletterName: `${botname}`,
+ },
+ externalAdReply: {
+ title: `Jadwal Sholat Harian`,
+ mediaType: 1,
+ previewType: 1,
+ body: `Informasi waktu sholat untuk kota ${text}`,
+ thumbnailUrl,
+ renderLargerThumbnail: true,
+ mediaUrl: "https://www.islamicfinder.org",
+ sourceUrl: "https://www.islamicfinder.org",
+ },
+ },
+ }, { quoted: m });
+ } catch (error) {
+ m.reply("Gagal mendapatkan jadwal sholat. Pastikan nama kota benar.");
+ }
+}
+break
+				
 				case 'waktusholat':
 					if (/on|true/i.test(teks[1])) {
 						if (set[teks[0]]) return m.reply('*Sudah Aktif Sebelumnya*')
