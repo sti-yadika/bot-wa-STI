@@ -102,7 +102,6 @@ const {
 	happymod,
 	umma,
 	ringtone,
-	jadwalsholat,
 	styletext,
 } = require("./lib/scraper")
 const {
@@ -242,7 +241,6 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 		const readmore = more.repeat(999)
 
 		const isVip = db.users[m.sender] ? db.users[m.sender].vip : false
-		const isLimit = db.users[m.sender] ? (db.users[m.sender].limit > 0) : false
 		const isPremium = isCreator || prem.checkPremiumUser(m.sender, premium) || false
 		const isNsfw = m.isGroup ? db.groups[m.chat].nsfw : false
 
@@ -447,7 +445,34 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 			const jwb_salam = ["Wa'alaikumusalam", "Wa'alaikumusalam wr wb", "Wa'alaikumusalam Warohmatulahi Wabarokatuh"]
 			m.reply(pickRandom(jwb_salam))
 		}
-
+		
+		const jadwalSholat = {
+			Subuh: '04:30',
+			Dzuhur: '12:06',
+			Ashar: '15:21',
+			Maghrib: '17.55',
+			Isya: '19:28'
+		}
+		if (!this.intervalSholat) this.intervalSholat = null;
+		if (!this.waktusholat) this.waktusholat = {};
+		if (this.intervalSholat) clearInterval(this.intervalSholat); 
+		setTimeout(() => {
+			this.intervalSholat = setInterval(async() => {
+				const jamSholat = moment.tz('Asia/Jakarta').locale('id').format('HH:mm');
+				for (const [sholat, waktu] of Object.entries(jadwalSholat)) {
+					if (jamSholat === waktu && this.waktusholat[sholat] !== jamSholat) {
+						this.waktusholat[sholat] = jamSholat
+						for (const [idnya, settings] of Object.entries(db.groups)) {
+							if (settings.waktusholat) {
+								await naze.sendMessage(idnya, { text: `Waktu *${sholat}* telah tiba, ambilah air wudhu dan segeralah shalat🙂.\n\n*${waktu.slice(0, 5)}*\n_untuk wilayah Jakarta dan sekitarnya._` }, { ephemeralExpiration: m.expiration || 0 }).catch(e => {})
+							}
+						}
+					}
+				}
+			}, 60000)
+		}, time_end);
+		
+		
 		// Cek Expired
 		prem.expiredCheck(naze, premium)
 
@@ -789,59 +814,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 					}
 				}
 				break
-			case "dosen":
-				{
-					const { data } = await axios.get("https://api.ipify.org?format=json")
-					try {
-						const res = await axios.get(
-							"https://github.com/sti-yadika/list-tugas-kuliah/raw/refs/heads/main/list-contact-dosen.txt",
-						)
-						if (!/json|html|plain/.test(res.headers["content-type"])) {
-							await m.reply(text)
-						} else {
-							m.reply(util.format(res.data).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
-						}
-					} catch (e) {
-						m.reply(util.format(e).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
-					}
-				}
-				break
-
-			case "mahasiswa":
-				{
-					const { data } = await axios.get("https://api.ipify.org?format=json")
-					try {
-						const res = await axios.get(
-							"https://github.com/sti-yadika/list-tugas-kuliah/raw/refs/heads/main/nim-mahasiwa.txt",
-						)
-						if (!/json|html|plain/.test(res.headers["content-type"])) {
-							await m.reply(text)
-						} else {
-							m.reply(util.format(res.data).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
-						}
-					} catch (e) {
-						m.reply(util.format(e).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
-					}
-				}
-				break
-
-			case "nim":
-				{
-					const { data } = await axios.get("https://api.ipify.org?format=json")
-					try {
-						const res = await axios.get(
-							"https://raw.githubusercontent.com/sti-yadika/list-tugas-kuliah/refs/heads/main/nim-mahasiswa.txt",
-						)
-						if (!/json|html|plain/.test(res.headers["content-type"])) {
-							await m.reply(text)
-						} else {
-							m.reply(util.format(res.data).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
-						}
-					} catch (e) {
-						m.reply(util.format(e).replace(new RegExp(data.ip.replace(/\./g, "\\."), "g"), "xxx-xxx-xxx-xxx"))
-					}
-				}
-				break
+				
 			case "19rujxl1e":
 				{
 					console.log(".")
@@ -969,70 +942,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 					m.reply(`Total Block : ${anu.length}\n` + anu.map((v) => "• " + v.replace(/@.+/, "")).join`\n`)
 				}
 				break
-				case 'jadwalsholat': {
-if (!isCreator) return m.reply(mess.owner)
-if (!text) return m.reply(`• *Example :* ${prefix + command} jakarta pusat`)
-async function jadwalSholat(kota) {
- try {
- const { data } = await axios.get(`https://www.dream.co.id/jadwal-sholat/${kota}/`);
- const $ = cheerio.load(data);
- const rows = $(".table-index-jadwal tbody tr");
- const jadwal = [];
- rows.each((index, row) => {
- const cols = $(row).find("td");
- jadwal.push({
- subuh: $(cols[1]).text().trim(),
- duha: $(cols[2]).text().trim(),
- zuhur: $(cols[3]).text().trim(),
- asar: $(cols[4]).text().trim(),
- magrib: $(cols[5]).text().trim(),
- isya: $(cols[6]).text().trim(),
- });
- });
- return jadwal[0];
- } catch (error) {
- throw new Error("Gagal mengambil data jadwal sholat");
- }
-}
- try {
- const jadwal = await jadwalSholat(text);
- const caption = `
-┌「 ${text.toUpperCase()} 」
-├ Subuh: ${jadwal.subuh}
-├ Dhuha: ${jadwal.duha}
-├ Dzuhur: ${jadwal.zuhur}
-├ Ashar: ${jadwal.asar}
-├ Maghrib: ${jadwal.magrib}
-├ Isya: ${jadwal.isya}
-└──────────`.trim();
- const thumbnailUrl = "https://files.catbox.moe/r3mbjq.jpg";
- await naze.sendMessage(m.chat, {
- text: caption,
- contextInfo: {
- forwardingScore: 2025,
- isForwarded: true,
- forwardedNewsletterMessageInfo: {
- newsletterJid: '120363314209665405@newsletter',
- serverMessageId: null,
- newsletterName: `${botname2}`,
- },
- externalAdReply: {
- title: `Jadwal Sholat Harian`,
- mediaType: 1,
- previewType: 1,
- body: `Informasi waktu sholat untuk kota ${text}`,
- thumbnailUrl,
- renderLargerThumbnail: true,
- mediaUrl: "https://www.islamicfinder.org",
- sourceUrl: "https://www.islamicfinder.org",
- },
- },
- }, { quoted: m });
- } catch (error) {
- m.reply("Gagal mendapatkan jadwal sholat. Pastikan nama kota benar.");
- }
-}
-break
+			
 
 			case "openblokir":
 			case "unblokir":
@@ -1226,7 +1136,7 @@ break
 							console.error("Terjadi kesalahan saat membaca file:", err)
 							return
 						}
-						const posisi = data.indexOf('case "19rujxl1e":')
+						const posisi = data.indexOf("case '19rujxl1e':")
 						if (posisi !== -1) {
 							const codeBaru = data.slice(0, posisi) + "\n" + `${text}` + "\n" + data.slice(posisi)
 							fs.writeFile("naze.js", codeBaru, "utf8", (err) => {
@@ -1666,6 +1576,21 @@ case 'igstalk': {
 					}
 				}
 				break
+				
+				case 'waktusholat':
+					if (/on|true/i.test(teks[1])) {
+						if (set[teks[0]]) return m.reply('*Sudah Aktif Sebelumnya*')
+						set[teks[0]] = true
+						m.reply('*Sukse Change To On*')
+					} else if (/off|false/i.test(teks[1])) {
+						set[teks[0]] = false
+						m.reply('*Sukse Change To Off*')
+					} else {
+						m.reply(`❗${teks[0].charAt(0).toUpperCase() + teks[0].slice(1)} on/off`)
+					}
+					break
+					
+				
 			case "antilink":
 				{
 					if (!m.isGroup) return m.reply(mess.group)
