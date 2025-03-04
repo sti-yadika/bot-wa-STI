@@ -239,6 +239,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 		const setv = pickRandom(listv)
 		const more = String.fromCharCode(8206)
 		const readmore = more.repeat(999)
+		const time_end = 60000 - (time_now.getSeconds() * 1000 + time_now.getMilliseconds())
 
 		const isVip = db.users[m.sender] ? db.users[m.sender].vip : false
 		const isLimit = db.users[m.sender] ? (db.users[m.sender].limit > 0) : false
@@ -471,11 +472,11 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 					}
 				}
 			}, 60000)
-		}, time_end);
+		}, time_end)
 		
 		
 		// Cek Expired
-		prem.expiredCheck(naze, premium);
+		prem.expiredCheck(naze, premium)
 
 		// TicTacToe
 		let room = Object.values(tictactoe).find(
