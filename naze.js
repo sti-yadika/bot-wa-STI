@@ -475,7 +475,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 		
 		
 		// Cek Expired
-		prem.expiredCheck(naze, premium)
+		prem.expiredCheck(naze, premium);
 
 		// TicTacToe
 		let room = Object.values(tictactoe).find(
@@ -1578,7 +1578,7 @@ case 'igstalk': {
 				}
 				break
 				
-				case 'waktulsholat':
+				case 'jadwalsholat':
 if (isBan) return m.reply('*Anda Telah Diban Jadi Nggak Bisa Memakai Fitur Bot Lagi*')
 if (args.length == 0) return reply(`Example: ${prefix + command} Yogyakarta`)
 await loading()
@@ -1601,7 +1601,7 @@ reply(text)
 .catch(console.error)
 break
 				
-				case 'jadwalsholat':
+				case 'waktusholat':
 					if (/on|true/i.test(teks[1])) {
 						if (set[teks[0]]) return m.reply('*Sudah Aktif Sebelumnya*')
 						set[teks[0]] = true
