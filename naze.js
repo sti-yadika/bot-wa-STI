@@ -239,8 +239,7 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 		const setv = pickRandom(listv)
 		const more = String.fromCharCode(8206)
 		const readmore = more.repeat(999)
-		const time_now = new Date()
-		const time_end = 60000 - (time_now.getSeconds() * 1000 + time_now.getMilliseconds());
+		
 
 		const isVip = db.users[m.sender] ? db.users[m.sender].vip : false
 		const isLimit = db.users[m.sender] ? (db.users[m.sender].limit > 0) : false
@@ -448,32 +447,6 @@ module.exports = naze = async (naze, m, chatUpdate, store) => {
 			const jwb_salam = ["Wa'alaikumusalam", "Wa'alaikumusalam wr wb", "Wa'alaikumusalam Warohmatulahi Wabarokatuh"]
 			m.reply(pickRandom(jwb_salam))
 		}
-		
-		const jadwalSholat = {
-			Subuh: '04:30',
-			Dzuhur: '12:06',
-			Ashar: '15:21',
-			Maghrib: '17.55',
-			Isya: '19:28'
-		}
-		if (!this.intervalSholat) this.intervalSholat = null;
-		if (!this.waktusholat) this.waktusholat = {};
-		if (this.intervalSholat) clearInterval(this.intervalSholat); 
-		setTimeout(() => {
-			this.intervalSholat = setInterval(async() => {
-				const jamSholat = moment.tz('Asia/Jakarta').locale('id').format('HH:mm');
-				for (const [sholat, waktu] of Object.entries(jadwalSholat)) {
-					if (jamSholat === waktu && this.waktusholat[sholat] !== jamSholat) {
-						this.waktusholat[sholat] = jamSholat
-						for (const [idnya, settings] of Object.entries(db.groups)) {
-							if (settings.waktusholat) {
-								await naze.sendMessage(idnya, { text: `Waktu *${sholat}* telah tiba, ambilah air wudhu dan segeralah shalat🙂.\n\n*${waktu.slice(0, 5)}*\n_untuk wilayah Jakarta dan sekitarnya._` }, { ephemeralExpiration: m.expiration || 0 }).catch(e => {})
-							}
-						}
-					}
-				}
-			}, 60000)
-		}, time_end);
 		
 		
 		// Cek Expired
