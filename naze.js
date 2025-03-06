@@ -1554,40 +1554,17 @@ case 'igstalk': {
 				break
 				
 				case 'jadwalsholat':
-if (isBan) return m.reply('*Anda Telah Diban Jadi Nggak Bisa Memakai Fitur Bot Lagi*')
-if (args.length == 0) return reply(`Example: ${prefix + command} Yogyakarta`)
-await loading()
-axios
-.get(`https://api.lolhuman.xyz/api/sholat/${args[0]}?apikey=${apikey}`)
+if (!text) return reply(`*Contoh:* ${prefix + command} palembang`)
+axios.get(`https://apisanz.my.id/search/jadwalsholat?search=${text}}`)
 .then(({ data }) => {
-var text = `Wilayah : ${data.result.wilayah}\n`
-text += `Tanggal : ${data.result.tanggal}\n`
-text += `Sahur : ${data.result.sahur}\n`
-text += `Imsak : ${data.result.imsak}\n`
-text += `Subuh : ${data.result.subuh}\n`
-text += `Terbit : ${data.result.terbit}\n`
-text += `Dhuha : ${data.result.dhuha}\n`
-text += `Dzuhur : ${data.result.dzuhur}\n`
-text += `Ashar : ${data.result.ashar}\n`
-text += `Maghrib : ${data.result.imsak}\n`
-text += `Isya : ${data.result.isya}`
-reply(text)
+var tet = `\`Kota = ${data.data.kota}\`\n\n`
+tet += `Tanggal = ${data.data.tanggal}`
+tet += `Imsak = ${data.data.jadwal.imsak}\nSubuh = ${data.data.jadwal.subuh}\nDzuhur = ${data.data.jadwal.dzuhur}\nAshar = ${data.data.jadwal.ashar}\nMagrib = ${data.data.jadwal.magrib}\nIsya = ${data.data.jadwal.Isyak}`
+reply(tet)
 })
 .catch(console.error)
 break
 				
-				case 'waktusholat':
-					if (/on|true/i.test(teks[1])) {
-						if (set[teks[0]]) return m.reply('*Sudah Aktif Sebelumnya*')
-						set[teks[0]] = true
-						m.reply('*Sukse Change To On*')
-					} else if (/off|false/i.test(teks[1])) {
-						set[teks[0]] = false
-						m.reply('*Sukse Change To Off*')
-					} else {
-						m.reply(`❗${teks[0].charAt(0).toUpperCase() + teks[0].slice(1)} on/off`)
-					}
-					break
 					
 				
 			case "antilink":
